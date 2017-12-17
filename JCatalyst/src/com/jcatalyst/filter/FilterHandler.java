@@ -2,7 +2,11 @@ package com.jcatalyst.filter;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
@@ -24,7 +28,10 @@ public class FilterHandler extends AbstractHandler {
 
 	@Override
 	public void handle(String target, Request basereq, HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-		for (String s : JCatalyst.getViews().keySet()) {
+		List<String> l = new ArrayList(JCatalyst.getViews().keySet());
+		ListIterator<String> a = l.listIterator(l.size());
+		while (a.hasPrevious()) {
+			String s = a.previous();
 			if (Pattern.matches(s, target)) {
 				View v = JCatalyst.getViews().get(s).handle(req, res);
 				if (!v.getMap().containsKey("imports"))
@@ -55,6 +62,7 @@ public class FilterHandler extends AbstractHandler {
 				OutputStreamWriter writer = new OutputStreamWriter(res.getOutputStream());
 				template.merge(new VelocityContext(v.getMap()), writer);
 				writer.flush();
+				return;
 			}
 		}
 		for (String s : JCatalyst.getFiles().keySet()) {
@@ -65,6 +73,7 @@ public class FilterHandler extends AbstractHandler {
 					writer.write((String) r);
 					writer.flush();
 				}
+				return;
 			}
 		}
 	}

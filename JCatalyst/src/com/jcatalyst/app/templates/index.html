@@ -24,15 +24,25 @@
 		</div>
 	</div>-->
 
-	<h1>To Do List</h1>
+	<!--<h1>To Do List</h1>
 
-	<p data-catalyst="todo"></p>
-	<input type="text" data-catalyst="todo" class="input" value="This is the default CLIENT value">
+	<input type="text" data-catalyst="todo" class="input" required>
+	<label>Add to To Do List</label>
 
 	<div class="list">
+		<h3 data-no-catalyst>Uncompleted Task</h3>
 		<a data-catalyst-list="todolist">
-			Task: <span data-catalyst="list-element"></span>
+			<input type="checkbox" class="checkbox"><label></label> Task: <span data-catalyst="list-element"></span>
 		</a>
+		<a data-no-catalyst data-catalyst-list-position="bottom">Task: <span data-catalyst="todo"></span></a>
+	</div>-->
+
+	<h1>Chat</h1>
+
+	<input type="text" data-catalyst="chatt" class="input">
+
+	<div class="list">
+		<a data-catalyst-list="chat"><span data-catalyst-query="user"></span> wrote <span data-catalyst-query="msg"></span></a>
 	</div>
 </body>
 </html>

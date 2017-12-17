@@ -66,27 +66,40 @@ $(function () {
 		return $(this).attr("data-" + v);
 	};*/
 
+	$.fn.hasData = function (v) {
+		return $(this).data(v) != undefined && $(this).data(v) != null;
+	}
+
+	$("*[data-catalyst-list]").addClass("hide");
+
 	var ws = new WebSocket("ws://" + location.hostname + ":" + location.port + "/events/live/");
 
 	ws.onmessage = function (msg) {
 		var json = JSON.parse(msg.data);
 
 		if (json.type == "value-change") {
-			$("p[data-catalyst='" + json.name + "']").text(json.value);
+			$("p[data-catalyst='" + json.name + "'], span[data-catalyst='" + json.name + "'], a[data-catalyst='" + json.name + "']").text(json.value);
 			$("input[data-catalyst='" + json.name + "']").val(json.value);
 		} else if (json.type == "load-list") {
 			//alert(json.name);
 			//var bce = $("*[data-catalyst-list=\"" + json.name + "\"").first();
+			var bce;
 			$("*").each(function() {
+				console.log(json.name);
 				if ($(this).data("catalyst-list") == json.name) {
 					bce = $(this);
 					//alert(bce);
 				}
 			});
-			console.log(bce);
+			//console.log(bce);
+			var badds = [];
 			bce.parent().children().each(function () {
-				if (this != bce[0]) {
+				if (this != bce[0] && !($(this).hasData("no-catalyst"))) {
 					$(this).remove();
+				} else {
+					if ($(this).data("catalyst-list-position") == "bottom") {
+						badds.push($(this));
+					}
 				}
 			});
 			for (i in json.value) {
@@ -95,13 +108,18 @@ $(function () {
 				sce.find("*[data-catalyst-query]").each(function () {
 					$(this).text(getObjectValueFromString(json.value[i], $(this).data("catalyst-query")));
 				});
+				sce.removeClass("hide");
+				bce.addClass("hide");
 				bce.parent().append(sce);
 			}
-			bce.remove();
+			for (i in badds) {
+				var b = badds[i];
+				b.appendTo(bce.parent());
+			}
 		}
 	};
 	ws.onclose = function () {
-		console.log("Closed");
+		//console.log("Closed");
 		//location.reload();
 	};
 	a = function () {
@@ -124,7 +142,7 @@ $(function () {
 				modifyValue($(this).data("catalyst"), $(this).val());
 			}
 		});
-		loadList("todolist");
+		//loadList("todolist");
 		a();
 	}
 
