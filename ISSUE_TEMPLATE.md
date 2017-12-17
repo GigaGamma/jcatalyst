@@ -1,2 +1,2 @@
-[x] Reporting a *bug*
-[] Requesting a *feature*
+- [x] Reporting a *bug*
+- [] Requesting a *feature*
