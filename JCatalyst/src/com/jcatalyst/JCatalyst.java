@@ -22,6 +22,7 @@ import com.jcatalyst.templates.View;
 public class JCatalyst {
 	
 	public static final Logger LOGGER = Logger.getLogger("JCatalyst");
+	public static final boolean LOG_CLIENT = false;
 	
 	private static final CatalystServer SERVER = new CatalystServer();
 	private static final Map<String, ViewFilter> VIEWS = new HashMap<String, ViewFilter>();

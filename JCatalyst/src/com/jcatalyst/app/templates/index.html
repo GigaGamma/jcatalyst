@@ -4,14 +4,14 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>JCatalyst</title>
+	<title>Default JCatalyst App</title>
 	
 	<link rel="icon" href="/catalyst/icon.png">
-
+	
 	$imports
 </head>
 <body>
-	<img src="/catalyst/icon.png" alt="" width="100" height="100">
+	<!--<img src="/catalyst/icon.png" alt="" width="100" height="100">
 	<h1>Your JCatalyst app is up and running!</h1>
 	<br>
 	<p>This is JCatalyst's default page. If you have configured a <code>JCatalyst.get("/", (req, res) -> {...})</code> and it redirected you to this page, your code might not be functioning correctly</p>
@@ -22,12 +22,17 @@
 			<a class="btn">View Documentation</a>
 			<a class="btn" target="blank" href="https://www.youtube.com/channel/UCt4LCYyn9nVAlyeXIYAryLg">Video Tutorials</a>
 		</div>
-	</div>
-	<p catalyst="sampleinput"></p>
-	<input type="text" catalyst="sampleinput" class="input" value="This is the default CLIENT value">
+	</div>-->
+
+	<h1>To Do List</h1>
+
+	<p data-catalyst="todo"></p>
+	<input type="text" data-catalyst="todo" class="input" value="This is the default CLIENT value">
 
 	<div class="list">
-		<a catalyst-list="samplelist">Element is <span catalyst="list-element"></span></a>
+		<a data-catalyst-list="todolist">
+			Task: <span data-catalyst="list-element"></span>
+		</a>
 	</div>
 </body>
 </html>

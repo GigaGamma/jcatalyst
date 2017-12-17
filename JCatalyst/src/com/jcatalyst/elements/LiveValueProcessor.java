@@ -16,6 +16,7 @@ public abstract class LiveValueProcessor {
 	}
 	
 	public abstract Object set(String name, Object value);
+	public abstract Object submit(String name, Object value);
 	public abstract Object[] getList(String name);
 	public abstract Object[] setList(String name, Object[] value);
 	

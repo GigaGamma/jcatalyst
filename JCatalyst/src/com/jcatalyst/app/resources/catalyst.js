@@ -13,6 +13,15 @@ class StatusBar extends CatalystElement {
 	}
 }
 
+
+function getObjectValueFromString(foo, query) {
+	return query.split('.')
+	.reduce(function (object, property) {
+  
+	  return object[property];
+	}, foo);
+}
+
 $(function () {
 	window.customElements.define("status-bar", StatusBar);
 
@@ -48,40 +57,100 @@ $(function () {
 		return $(newElements);
 	};
 
+	/*$.fn.data = function (v) {
+		return $(this).attr("data-" + v);
+	};
+
+	$.fn.data = function (v, nv) {
+		$(this).attr("data
+		return $(this).attr("data-" + v);
+	};*/
+
 	var ws = new WebSocket("ws://" + location.hostname + ":" + location.port + "/events/live/");
-	
+
 	ws.onmessage = function (msg) {
 		var json = JSON.parse(msg.data);
+
 		if (json.type == "value-change") {
-			$("p[catalyst='" + json.name + "']").text(json.value);
-			$("input[catalyst='" + json.name + "']").val(json.value);
+			$("p[data-catalyst='" + json.name + "']").text(json.value);
+			$("input[data-catalyst='" + json.name + "']").val(json.value);
 		} else if (json.type == "load-list") {
-			var bce = $("*[catalyst-list='" + json.name + "'");
+			//alert(json.name);
+			//var bce = $("*[data-catalyst-list=\"" + json.name + "\"").first();
+			$("*").each(function() {
+				if ($(this).data("catalyst-list") == json.name) {
+					bce = $(this);
+					//alert(bce);
+				}
+			});
+			console.log(bce);
+			bce.parent().children().each(function () {
+				if (this != bce[0]) {
+					$(this).remove();
+				}
+			});
 			for (i in json.value) {
 				var sce = bce.clone();
-				sce.find("*[catalyst='list-element']").text(json.value[i]);
+				sce.find("*[data-catalyst='list-element']").text(json.value[i]);
+				sce.find("*[data-catalyst-query]").each(function () {
+					$(this).text(getObjectValueFromString(json.value[i], $(this).data("catalyst-query")));
+				});
 				bce.parent().append(sce);
 			}
 			bce.remove();
 		}
 	};
 	ws.onclose = function () {
-		location.reload()
+		console.log("Closed");
+		//location.reload();
+	};
+	a = function () {
+		var log = console.log;
+		console.log = function () {
+			logWireless("log", arguments);
+			log.apply(this, Array.prototype.slice.call(arguments));
+		};
+
+		var error = console.error;
+		console.error = function () {
+			logWireless("err", arguments);
+			error.apply(this, Array.prototype.slice.call(arguments));
+		};
 	};
 	ws.onopen = function () {
-		console.log("[CatalystWebSocket] Successfully connected (" + $.meta("catalyst-id") + ") => ws://" + location.hostname + ":" + location.port + "/events/live/");
-		$("input[catalyst]").each(function() {
+		console.log("[CatalystWebSocket] Successfully connected (" + $.meta("data-catalyst-id") + ") => ws://" + location.hostname + ":" + location.port + "/events/live/");
+		$("input[data-catalyst]").each(function() {
 			if ($(this).is("[value]")) {
-				modifyValue($(this).attr("catalyst"), $(this).val());
+				modifyValue($(this).data("catalyst"), $(this).val());
 			}
 		});
-		loadList("samplelist");
+		loadList("todolist");
+		a();
+	}
+
+	function logWireless(c, a) {
+		ws.send(JSON.stringify({
+			"type": "console",
+			"id": $.meta("catalyst-id"),
+			"name": c,
+			"value": Array.prototype.slice.call(a)
+		}));
 	}
 
 	function modifyValue(name, value) {
 		console.log("[CatalystWebSocket] Modifying value " + name);
 		ws.send(JSON.stringify({
 			"type": "value-change",
+			"id": $.meta("catalyst-id"),
+			"name": name,
+			"value": value
+		}));
+	}
+
+	function submitValue(name, value) {
+		console.log("[CatalystWebSocket] Submitting value " + name);
+		ws.send(JSON.stringify({
+			"type": "submit",
 			"id": $.meta("catalyst-id"),
 			"name": name,
 			"value": value
@@ -105,8 +174,14 @@ $(function () {
 		$(this).toggleClass("toggled");
 	});
 
-	$(document.body).on("input", "input[catalyst]", function(e) {
-		modifyValue($(this).attr("catalyst"), $(this).val());
+	$(document.body).on("input", "input[data-catalyst]", function(e) {
+		modifyValue($(this).data("catalyst"), $(this).val());
+	});
+
+	$(document.body).on("keypress", "input[data-catalyst]", function(e) {
+		if (e.which == 13) {
+			submitValue($(this).data("catalyst"), $(this).val());
+		}
 	});
 
 	$(document.body).on("change", ".input-group>input[type='file']", function(e) {

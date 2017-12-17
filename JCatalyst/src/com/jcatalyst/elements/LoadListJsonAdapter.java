@@ -4,9 +4,9 @@ public class LoadListJsonAdapter {
 	
 	public String type = "load-list";
 	public String name;
-	public String[] value;
+	public Object[] value;
 	
-	public LoadListJsonAdapter(String name, String[] value) {
+	public LoadListJsonAdapter(String name, Object[] value) {
 		this.name = name;
 		this.value = value;
 	}
