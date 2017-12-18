@@ -142,7 +142,6 @@ $(function () {
 				modifyValue($(this).data("catalyst"), $(this).val());
 			}
 		});
-		//loadList("todolist");
 		a();
 	}
 
